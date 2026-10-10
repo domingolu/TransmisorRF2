@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../TransmisorRF"
+		},
+		{
+			"name": "pantalla",
+			"path": "../TransmisorRF/pantalla"
+		}
+	],
+	"settings": {}
+}

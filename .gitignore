@@ -1,0 +1,18 @@
+# PlatformIO
+.pio/
+.pioenvs/
+
+# VS Code
+.vscode/
+
+# Compilados
+*.o
+*.obj
+*.elf
+*.hex
+*.eep
+*.lst
+
+# SO
+.DS_Store
+Thumbs.db
