@@ -1,11 +1,15 @@
 {
 	"folders": [
 		{
-			"path": "../TransmisorRF"
+			"path": "."
 		},
 		{
-			"name": "pantalla",
-			"path": "../TransmisorRF/pantalla"
+			"name": "transmitter",
+			"path": "./transmitter"
+		},
+		{
+			"name": "receiver",
+			"path": "./receiver"
 		}
 	],
 	"settings": {}
