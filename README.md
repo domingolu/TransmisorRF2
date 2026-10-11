@@ -16,12 +16,12 @@ TransmisorRF2/
 ├── transmitter/                # Proyecto PlatformIO del transmisor (Nano)
 │   ├── platformio.ini
 │   ├── src/main.cpp            # Firmware del transmisor
-│   ├── lib/                    # Joystick y Pantalla (librerías propias)
-│   └── tests/                  # Tests de hardware (uno por entorno)
+│   ├── src/tests/              # Tests de hardware (uno por env)
+│   └── lib/                    # Joystick y Pantalla (librerías propias)
 └── receiver/                   # Proyecto PlatformIO del receptor (Pro Mini)
     ├── platformio.ini
     ├── src/main.cpp            # Firmware del receptor
-    └── tests/
+    └── src/tests/
 ```
 
 ## Quickstart
@@ -35,7 +35,8 @@ TransmisorRF2/
    pio run -e firmware -t upload  # flashea (verificar el puerto)
    ```
 
-4. Tests de hardware (ver `transmitter/README.md`):
+4. Tests de hardware (ver `transmitter/README.md`), cada uno compila
+   solo su sketch con `build_src_filter`:
 
    ```sh
    pio run -e test-botones

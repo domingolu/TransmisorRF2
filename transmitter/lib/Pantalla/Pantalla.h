@@ -88,18 +88,20 @@ public:
    * Muestra un mensaje centrado horizontalmente en la pantalla.
    *
    * @param mensaje  Texto a mostrar (se usa print, no println).
-   * @param tamaño   Tamaño del texto (1 = normal, 2 = doble, etc.). Por defecto 2.
+   * @param tamanio  Tamaño del texto (1 = normal, 2 = doble, etc.). Por defecto 2.
    * @param y        Coordenada vertical en píxeles. Por defecto 20.
    */
-  void mostrarMensaje(const String &mensaje, uint8_t tamaño = 2, int16_t y = 20) {
-    _display.setTextSize(tamaño);
+  void mostrarMensaje(const String &mensaje, uint8_t tamanio = 2, int16_t y = 20) {
+    _display.setTextSize(tamanio);
     _display.setTextColor(SSD1306_WHITE);
 
     // Calcular ancho del texto con el tamaño actual
-    int16_t anchoTexto = _display.textWidth(mensaje);
+    int16_t x1, y1;
+    uint16_t anchoTexto, altoTexto;
+    _display.getTextBounds(mensaje, 0, 0, &x1, &y1, &anchoTexto, &altoTexto);
 
     // Centrar horizontalmente
-    int16_t x = (PANTALLA_ANCHO - anchoTexto) / 2;
+    int16_t x = (PANTALLA_ANCHO - (int16_t)anchoTexto) / 2;
 
     _display.setCursor(x, y);
     _display.print(mensaje);  // sin salto de línea

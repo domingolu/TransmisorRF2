@@ -24,6 +24,9 @@
 
 ## Tests de hardware
 
+Los tests viven en `src/tests/` y cada entorno compila solo su sketch
+(vía `build_src_filter` en `platformio.ini`).
+
 | Entorno | Qué prueba | Comando |
 |---|---|---|
 | `test-botones` | 4 botones con debounce (D5-D8) | `pio run -e test-botones -t upload` |
