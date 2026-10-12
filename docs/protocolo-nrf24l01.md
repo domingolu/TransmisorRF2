@@ -13,11 +13,13 @@ o en la configuración de radio se hace ahí, nunca duplicado en cada proyecto.
 | PA level | `RF24_PA_LOW` (solo afecta al transmisor) |
 | Auto-ACK | desactivado |
 | Payload | 10 bytes (1 byte por canal) |
+| Tasa de transmisión | ~50 Hz (un paquete cada 20 ms) |
 
 ## Canales (estructura `DatosRF`)
 
 Un byte por canal (0-255). Los analógicos se mapean con
-`map(analogRead(pin), 0, 1024, 0, 255)`.
+`map(analogRead(pin), 0, 1024, 0, 255)`. Los botones se
+envían con semántica **1 = pulsado, 0 = sin pulsar**.
 
 | Canal | Señal | Pin TX (Nano) | Valor inicial |
 |---|---|---|---|
@@ -25,9 +27,9 @@ Un byte por canal (0-255). Los analógicos se mapean con
 | ch2 | Joystick izquierdo, eje Y | A1 | 127 |
 | ch3 | Joystick derecho, eje X | A2 | 127 |
 | ch4 | Joystick derecho, eje Y | A3 | 127 |
-| ch5 | Botón joystick izquierdo | D0 | 0 |
-| ch6 | Botón joystick derecho | D1 | 0 |
-| ch7 | Entrada analógica libre | A4 | 0 |
+| ch5 | Botón joystick izquierdo (1 = pulsado) | D0 | 0 |
+| ch6 | Botón joystick derecho (1 = pulsado) | D1 | 0 |
+| ch7 | Reservado (A4 para pantalla OLED) | — | 0 |
 | ch8–ch10 | Reservados (switches / potenciómetros) | — | 0 |
 
 > **Nota de migración:** el código original del transmisor (repo `TransmisorRF`)

@@ -1,8 +1,11 @@
 # AGENTS.md
 
-Monorepo PlatformIO para un mando RF: `transmitter/` (Arduino Nano +
-nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Migrado desde
-el repo `TransmisorRF` (ahí sigue el historial anterior).
+## Proyecto
+
+Proyecto DIY para un mando RF: `transmitter/` (Arduino Nano +
+nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Monorepo PlatformIO.
+
+
 
 ## Build y test
 
@@ -57,3 +60,30 @@ el repo `TransmisorRF` (ahí sigue el historial anterior).
 - Adafruit_GFX no tiene `textWidth`; medir texto con `getTextBounds`.
 - Las librerías locales header-only necesitan `library.properties` en su
   carpeta para que PlatformIO las reconozca.
+
+## Convenciones
+
+- Textos en español.
+- Código simple, nombres descriptivos y comentarios solo donde aporten.
+- Antes de implementar cambios, revisar el hardware y la estructura existentes en el repositorio.
+
+## Forma de trabajar
+
+- Haz solo lo que se pide: no añadas funcionalidades por tu cuenta.
+- Cambios pequeños y enfocados; no reescribas lo que ya funciona.
+- Documentar todo lo que se hace en los respectivos README.md
+- Al terminar, resume qué has cambiado y cualquier decisión que yo deba revisar.
+
+## Límites
+
+- ✅ Siempre: actualizar `MEMORY.md` al terminar cada tarea.
+- ⚠️ Pregunta antes: crear archivos nuevos, borrar archivos o cambiar el formato de los datos guardados.
+- 🚫 Nunca: añadir dependencias, frameworks o un paso de build sin preguntar antes.
+
+## Memoria
+
+- Al empezar, lee `MEMORY.md` para conocer el estado del proyecto y las decisiones tomadas.
+- Al terminar una tarea, actualízalo: estado actual, decisiones importantes (con su porqué) y errores a evitar.
+- Mantenlo breve (máximo ~50 líneas): resume o elimina lo que ya no aporte.
+- Si algo se convierte en una regla permanente, propón moverlo a `AGENTS.md` en lugar de dejarlo en la memoria.
+- No guardes nunca datos sensibles (claves, tokens, datos personales)

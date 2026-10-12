@@ -1,5 +1,5 @@
 /*
- * Receptor RF - Arduino Pro Mini + nRF24L01+
+ * Receptor RF - Arduino Pro Mini 8Mhz 3.3v + nRF24L01+
  *
  * Recibe los 10 canales (1 byte cada uno) enviados por el transmisor
  * y los muestra por el puerto serie. El protocolo (estructura y
@@ -12,16 +12,16 @@
  *   -------------------------
  *   GND         GND
  *   VCC         3.3 V   (¡el módulo no tolera 5V!)
- *   CE          D3
- *   CSN         D2
- *   SCK/CLK     D13
- *   MOSI        D11
- *   MISO        D12
+ *   CE          8
+ *   CSN         10
+ *   SCK/CLK     13
+ *   MOSI        11
+ *   MISO        12
  *
  * Importante:
  * - El transmisor y el receptor usan la misma dirección (RF_PIPE) y la
  *   misma estructura DatosRF, definidas en libraries/ProtocoloRF.
- * - Configurar el monitor serie a 9600 baudios.
+ * - Configurar el monitor serie a 115200 baudios.
  *
  * Formato de salida:
  *   "CH1: 128 | CH2: 127 | ... | CH10: 0"
@@ -31,7 +31,7 @@
 #include <ProtocoloRF.h>
 
 // RF24(CE, CSN)
-RF24 radio(3, 2);
+RF24 radio(8, 10);
 
 // Estructura recibida (definida en ProtocoloRF.h; 10 canales de 0 a 255).
 // El orden y los tipos deben coincidir con el transmisor.
@@ -39,7 +39,7 @@ DatosRF datos;
 
 void setup() {
   // Inicializa el puerto serie.
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Inicializa el módulo nRF24L01+.
   if (!radio.begin()) {

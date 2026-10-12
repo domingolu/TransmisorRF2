@@ -1,18 +1,23 @@
 # Transmisor RF (Arduino Nano)
 
+Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia para proyectos DIY.
+
 ## Specs
 
 - **Placa:** Arduino Nano (ATmega328, 5 V, 16 MHz) — `board = nanoatmega328`
 - **Radio:** nRF24L01+ (2.4 GHz, 250 kbps, PA LOW, auto-ACK off)
 - **Canales:** 10 (1 byte cada uno, 0-255) — ver `../docs/protocolo-nrf24l01.md`
-- **Entradas:** 2 joysticks analógicos con botón (A0-A3, D0/D1) y entrada libre A4
+- **Entradas:** 2 joysticks analógicos con botón (A0-A3, D0/D1); A4 reservado (futura pantalla OLED)
 - **Pines RF:** CE → D9, CSN → D10 (SPI por defecto: D11/D12/D13)
 - **Serie:** 115200 baudios
 
 ## Funcionalidades
 
-- Lee los joysticks y transmite los 10 canales por RF al receptor
-  (1 paquete por segundo).
+- Lee los dos joysticks (ejes X/Y y botones con antirrebote,
+  vía la librería propia `Joystick`) y transmite los 10 canales
+  por RF al receptor a ~50 Hz.
+- Botones con semántica 1 = pulsado, 0 = sin pulsar
+  (pull-up interno invertido en el firmware).
 - Estructura de datos y configuración de radio compartidas con el
   receptor (`libraries/ProtocoloRF`).
 - Muestra por monitor serie los valores transmitidos.
@@ -42,6 +47,5 @@ Para compilar sin flashear, quita `-t upload`.
 
 ## Notas
 
-- D0/D1 son RX/TX del UART del Nano; si el monitor serie falla, mueve
-  los botones de los joysticks a otros pines digitales libres.
+- D0/D1 son RX/TX del UART del Nano; si el monitor serie falla, mueve los botones de los joysticks a otros pines digitales libres.
 - El módulo nRF24L01+ se alimenta a **3.3 V** (ver `../docs/hardware/wiring.md`).
