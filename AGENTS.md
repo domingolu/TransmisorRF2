@@ -73,8 +73,9 @@ nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Monorepo PlatformIO.
 ## Límites
 
 - ✅ Siempre: actualizar `MEMORY.md` al terminar cada tarea.
-- ⚠️ Pregunta antes: crear archivos nuevos, borrar archivos o cambiar el formato de los datos guardados.
-- 🚫 Nunca: añadir dependencias, frameworks o un paso de build sin preguntar antes.
+- ⚠️ Pregunta antes: crear o modificar archivos, borrar archivos o cambiar el formato de los datos guardados.
+- ⚠️ Pregunta antes: añadir dependencias, frameworks o un paso de build 
+- 🚫 Nunca: <nada por ahora>
 
 ## Memoria
 

@@ -2,7 +2,7 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
 ## Estado actual
-- v1.2: TX y RX probados en hardware (los dos funcionan).
+- v1.3: TX y RX probados en hardware; switches L1/L2 (ch7/ch8) probados y funcionando.
 - TX: Nano con nuevo bootloader (`nanoatmega328new`), serie 115200.
 - RX: Pro Mini 3.3V/8MHz (`pro8MHzatmega328`), CE→D8, CSN→D10, serie 115200.
 - Los 11 entornos compilan (verificado con PlatformIO 6.2).
@@ -12,7 +12,7 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - Protocolo en libraries/ProtocoloRF (header compartido, lib_extra_dirs): DatosRF y RF_PIPE nunca se desincronizan. Corrige la incompatibilidad original (TX enviaba 10 canales, RX definía 7).
 - Tests como entornos en src/tests/ con build_src_filter: src_dir por entorno no existe en PIO 6.x.
 - Todos los envs del TX usan nanoatmega328new: la placa física tiene el nuevo bootloader (flasheo a 115200; con nanoatmega328 el upload a 57600 puede fallar).
-- Mapa de canales ch1-6 = joysticks (A0-A3, D0/D1) según esquema real; ch7 reservado (A4 para OLED futuro); ch8-10 reservados.
+- Mapa de canales ch1-6 = joysticks (A0-A3, D0/D1); ch7-8 = switches L1/L2 (D3/D4, toggle, debounce 50 ms, 1=activado); ch9-10 reservados (potenciómetros). A4 libre para OLED futuro.
 - Tasa ~50 Hz (delay 20 ms): 1 Hz original era inservible para un control remoto.
 - Botones con semántica 1=pulsado, 0=sin pulsar: ezButton con pull-up interno da 0 al pulsar, se invierte en el TX.
 - getButtonState() (nivel) y no isPressed() (flanco): nivel es adecuado para RC.
@@ -27,4 +27,4 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 
 ## Próximos pasos
 - Crear repo en GitHub (domingolu/TransmisorRF2) y hacer push.
-- Pantalla OLED en A4/A5 (librería Pantalla ya existe) y completar ch8-10 (switches/potenciómetros).
+- Pantalla OLED en A4/A5 (librería Pantalla ya existe) y completar ch9-10 (potenciómetros).

@@ -7,7 +7,7 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
 - **Placa:** Arduino Nano (ATmega328, 5 V, 16 MHz) — `board = nanoatmega328new` con nuevo bootloader
 - **Radio:** nRF24L01+ (2.4 GHz, 250 kbps, PA LOW, auto-ACK off)
 - **Canales:** 10 (1 byte cada uno, 0-255) — ver `../docs/protocolo-nrf24l01.md`
-- **Entradas:** 2 joysticks analógicos con botón (A0-A3, D0/D1); A4 reservado (futura pantalla OLED)
+- **Entradas:** 2 joysticks analógicos con botón (A0-A3, D0/D1); 2 switches L1/L2 (D3/D4)
 - **Pines RF:** CE → D9, CSN → D10 (SPI por defecto: D11/D12/D13)
 - **Serie:** 115200 baudios
 
@@ -18,6 +18,8 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
   por RF al receptor a ~50 Hz.
 - Botones con semántica 1 = pulsado, 0 = sin pulsar
   (pull-up interno invertido en el firmware).
+- Switches L1/L2 (D3/D4, tipo toggle) por ch7/ch8 con
+  antirrebote de 50 ms; 1 = activado, 0 = inactivo.
 - Estructura de datos y configuración de radio compartidas con el
   receptor (`libraries/ProtocoloRF`).
 - Muestra por monitor serie los valores transmitidos.

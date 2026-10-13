@@ -21,8 +21,9 @@
  *   ch4   JOY DER Y   -> A3   (0-255, centro 127)
  *   ch5   JOY IZQ BTN -> D0   (1 pulsado, 0 sin pulsar)
  *   ch6   JOY DER BTN -> D1   (1 pulsado, 0 sin pulsar)
- *   ch7   reservado   -> A4   (pendiente: pantalla OLED)
- *   ch8-ch10 reservados (switches / potenciómetros)
+ *   ch7   SW L1       -> D3   (1 activado, 0 inactivo)
+ *   ch8   SW L2       -> D4   (1 activado, 0 inactivo)
+ *   ch9-ch10 reservados (potenciómetros)
  *
  * Tasa de transmisión: ~50 Hz (un paquete cada 20 ms).
  *
@@ -32,6 +33,7 @@
 
 #include <Arduino.h>
 #include <ProtocoloRF.h>
+#include <ezButton.h>
 #include "Joystick.h"
 
 #define CE_PIN 9
@@ -44,6 +46,12 @@ RF24 radio(CE_PIN, CSN_PIN);
 // interno (ezButton lo configura en el constructor).
 Joystick joystickLeft(A0, A1, 0);
 Joystick joystickRight(A2, A3, 1);
+
+// Switches L1 y L2 (tipo toggle: activado en esa posición).
+// ezButton configura INPUT_PULLUP y el debounce en el
+// constructor; setDebounceTime() lo fija explícito.
+ezButton switchL1(3);
+ezButton switchL2(4);
 
 // Datos a transmitir (estructura definida en ProtocoloRF.h)
 DatosRF datos;
@@ -81,6 +89,11 @@ void setup() {
   joystickLeft.begin();
   joystickRight.begin();
 
+  // Debounce de los switches (50 ms, igual que los
+  // botones de los joysticks)
+  switchL1.setDebounceTime(50);
+  switchL2.setDebounceTime(50);
+
   // Inicializa el transceptor en el bus SPI
   if (!radio.begin()) {
     Serial.println(F("radio hardware is not responding!!"));
@@ -105,9 +118,12 @@ void setup() {
 void loop() {
 
   // Actualizar el estado de los joysticks (debounce del botón
-  // y lectura analógica); hay que llamarlo cada ciclo
+  // y lectura analógica) y de los switches (debounce);
+  // hay que llamarlos cada ciclo
   joystickLeft.loop();
   joystickRight.loop();
+  switchL1.loop();
+  switchL2.loop();
 
   /* Si un canal está invertido, intercambia 0 y 255:
      Normal:    datos.ch1 = map(joystickLeft.readX(), 0, 1024, 0, 255);
@@ -123,8 +139,14 @@ void loop() {
   datos.ch5 = !joystickLeft.getButtonState();  // Botón JOY IZQ
   datos.ch6 = !joystickRight.getButtonState();  // Botón JOY DER
 
-  // ch7: reservado (A4 se usará para la pantalla OLED)
-  // ch8-ch10: reservados, mantienen el valor inicial (0)
+  // Switches: misma inversión que los botones (con pull-up
+  // interno, getState() da 0 en la posición activada).
+  // Son tipo toggle: ch7/ch8 quedan en 1 mientras el
+  // switch esté en esa posición.
+  datos.ch7 = !switchL1.getState();  // SW L1 (D3)
+  datos.ch8 = !switchL2.getState();  // SW L2 (D4)
+
+  // ch9-ch10: reservados, mantienen el valor inicial (0)
 
   bool report = radio.write(&datos, sizeof(DatosRF));
 
