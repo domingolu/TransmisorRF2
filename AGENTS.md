@@ -46,20 +46,16 @@ nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Monorepo PlatformIO.
   250 kbps, PA LOW, auto-ACK off. Nunca duplicarlo en transmitter/ o
   receiver/.
 - Mapa de canales y cableado: `docs/protocolo-nrf24l01.md` y
-  `docs/hardware/wiring.md`. El mapa refleja el comportamiento real del
-  código (el comentario del viejo `Transmitter.ino` describía otra
+  `docs/hardware/wiring.md`. El mapa refleja el comportamiento real del código (el comentario del viejo `Transmitter.ino` describía otra
   distribución que nunca se cableó).
 - El nRF24L01+ se alimenta a **3.3 V** (nunca 5 V). Los botones de los
-  joysticks del TX están en D0/D1 (pines UART) y pueden interferir con el
-  monitor serie por USB.
+  joysticks del TX están en D0/D1 (pines UART) y pueden interferir con el monitor serie por USB.
 
 ## Gotchas de código
 
-- avr-gcc rechaza identificadores no ASCII (`tamaño` → `tamanio`). UTF-8
-  en comentarios sí funciona.
+- avr-gcc rechaza identificadores no ASCII (`tamaño` → `tamanio`). UTF-8 en comentarios sí funciona.
 - Adafruit_GFX no tiene `textWidth`; medir texto con `getTextBounds`.
-- Las librerías locales header-only necesitan `library.properties` en su
-  carpeta para que PlatformIO las reconozca.
+- Las librerías locales header-only necesitan `library.properties` en su carpeta para que PlatformIO las reconozca.
 
 ## Convenciones
 
