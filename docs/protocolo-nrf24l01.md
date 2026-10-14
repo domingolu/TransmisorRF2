@@ -17,8 +17,10 @@ o en la configuración de radio se hace ahí, nunca duplicado en cada proyecto.
 
 ## Canales (estructura `DatosRF`)
 
-Un byte por canal (0-255). Los analógicos se mapean con
-`map(analogRead(pin), 0, 1024, 0, 255)`. Botones y
+Un byte por canal (0-255). Los joysticks se mapean con
+`map(analogRead(pin), 0, 1024, 0, 255)` y los
+potenciómetros con `map(analogRead(pin), 0, 1023, 0, 255)`
+(rango completo del ADC). Botones y
 switches se envían con semántica **1 = activado, 0 = inactivo**
 y antirrebote de 50 ms (ezButton).
 
@@ -32,7 +34,8 @@ y antirrebote de 50 ms (ezButton).
 | ch6 | Botón joystick derecho (1 = pulsado) | D1 | 0 |
 | ch7 | Switch L1 (1 = activado, tipo toggle) | D3 | 0 |
 | ch8 | Switch L2 (1 = activado, tipo toggle) | D4 | 0 |
-| ch9–ch10 | Reservados (potenciómetros) | — | 0 |
+| ch9 | Potenciómetro P1 (mapeo directo) | A7 | 0 |
+| ch10 | Potenciómetro P2 (mapeo directo) | A6 | 0 |
 
 > **Nota de migración:** el código original del transmisor (repo `TransmisorRF`)
 > tenía un comentario que describía otra distribución (ch3 = botón izquierdo,

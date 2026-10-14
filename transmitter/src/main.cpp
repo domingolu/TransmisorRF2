@@ -23,7 +23,8 @@
  *   ch6   JOY DER BTN -> D1   (1 pulsado, 0 sin pulsar)
  *   ch7   SW L1       -> D3   (1 activado, 0 inactivo)
  *   ch8   SW L2       -> D4   (1 activado, 0 inactivo)
- *   ch9-ch10 reservados (potenciómetros)
+ *   ch9   POT P1      -> A7   (0-255, mapeo directo)
+ *   ch10  POT P2      -> A6   (0-255, mapeo directo)
  *
  * Tasa de transmisión: ~50 Hz (un paquete cada 20 ms).
  *
@@ -146,7 +147,11 @@ void loop() {
   datos.ch7 = !switchL1.getState();  // SW L1 (D3)
   datos.ch8 = !switchL2.getState();  // SW L2 (D4)
 
-  // ch9-ch10: reservados, mantienen el valor inicial (0)
+  // Potenciómetros: P1 -> A7 (ch9), P2 -> A6 (ch10).
+  // Mapeo directo (0 = un extremo, 255 = el otro) con
+  // tope 1023 para usar el rango completo del ADC.
+  datos.ch9 = map(analogRead(A7), 0, 1023, 0, 255);  // POT P1 (A7)
+  datos.ch10 = map(analogRead(A6), 0, 1023, 0, 255);  // POT P2 (A6)
 
   bool report = radio.write(&datos, sizeof(DatosRF));
 
