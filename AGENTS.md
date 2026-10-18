@@ -2,8 +2,9 @@
 
 ## Proyecto
 
-Proyecto DIY para un mando RF: `transmitter/` (Arduino Nano +
-nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Monorepo PlatformIO.
+Proyecto DIY para un mando RF que controla un cuadricóptero (drone):
+`transmitter/` (Arduino Nano + nRF24L01+) y `receiver/` (Arduino Pro
+Mini + nRF24L01+). Monorepo PlatformIO.
 
 
 
@@ -45,6 +46,9 @@ nRF24L01+) y `receiver/` (Arduino Pro Mini + nRF24L01+). Monorepo PlatformIO.
   `struct DatosRF` (10 canales de 1 byte), `RF_PIPE 0xE8E8F0F0E1LL`,
   250 kbps, PA LOW, auto-ACK off. Nunca duplicarlo en transmitter/ o
   receiver/.
+- Ejes de vuelo (cuadricóptero): ch1 = `yaw` (stick izq. horizontal),
+  ch2 = `throttle` (izq. vertical), ch3 = `roll` (der. horizontal),
+  ch4 = `pitch` (der. vertical); ch5-ch10 sin nombre de vuelo todavía.
 - Mapa de canales y cableado: `docs/protocolo-nrf24l01.md` y
   `docs/hardware/wiring.md`. El mapa refleja el comportamiento real del código (el comentario del viejo `Transmitter.ino` describía otra
   distribución que nunca se cableó).

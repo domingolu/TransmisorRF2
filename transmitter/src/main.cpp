@@ -15,10 +15,10 @@
  *     MISO -> D12
  *
  * Canales (ver docs/protocolo-nrf24l01.md):
- *   ch1   JOY IZQ X   -> A0   (0-255, centro 127)
- *   ch2   JOY IZQ Y   -> A1   (0-255, centro 127)
- *   ch3   JOY DER X   -> A2   (0-255, centro 127)
- *   ch4   JOY DER Y   -> A3   (0-255, centro 127)
+ *   ch1   YAW      stick IZQ horizontal (VRX -> A0, 0-255, centro 127)
+ *   ch2   THROTTLE stick IZQ vertical   (VRY -> A1, 0-255, centro 127)
+ *   ch3   ROLL     stick DER horizontal (VRX -> A2, 0-255, centro 127)
+ *   ch4   PITCH    stick DER vertical   (VRY -> A3, 0-255, centro 127)
  *   ch5   JOY IZQ BTN -> D0   (1 pulsado, 0 sin pulsar)
  *   ch6   JOY DER BTN -> D1   (1 pulsado, 0 sin pulsar)
  *   ch7   SW L1       -> D3   (1 activado, 0 inactivo)
@@ -58,14 +58,14 @@ ezButton switchL2(4);
 DatosRF datos;
 
 void printData(const DatosRF &d) {
-  Serial.print(F("ch1="));
-  Serial.print(d.ch1);
-  Serial.print(F(", ch2="));
-  Serial.print(d.ch2);
-  Serial.print(F(", ch3="));
-  Serial.print(d.ch3);
-  Serial.print(F(", ch4="));
-  Serial.print(d.ch4);
+  Serial.print(F("yaw="));
+  Serial.print(d.yaw);
+  Serial.print(F(", throttle="));
+  Serial.print(d.throttle);
+  Serial.print(F(", roll="));
+  Serial.print(d.roll);
+  Serial.print(F(", pitch="));
+  Serial.print(d.pitch);
   Serial.print(F(", ch5="));
   Serial.print(d.ch5);
   Serial.print(F(", ch6="));
@@ -126,14 +126,15 @@ void loop() {
   switchL1.loop();
   switchL2.loop();
 
-  /* Si un canal está invertido, intercambia 0 y 255:
-     Normal:    datos.ch1 = map(joystickLeft.readX(), 0, 1024, 0, 255);
-     Invertido: datos.ch1 = map(joystickLeft.readX(), 0, 1024, 255, 0); */
+  /* Si un eje está invertido, intercambia 0 y 255:
+     Normal:    datos.yaw = map(joystickLeft.readX(), 0, 1024, 0, 255);
+     Invertido: datos.yaw = map(joystickLeft.readX(), 0, 1024, 255, 0); */
 
-  datos.ch1 = map(joystickLeft.readX(), 0, 1024, 0, 255);  // JOY IZQ X
-  datos.ch2 = map(joystickLeft.readY(), 0, 1024, 0, 255);  // JOY IZQ Y
-  datos.ch3 = map(joystickRight.readX(), 0, 1024, 0, 255);  // JOY DER X
-  datos.ch4 = map(joystickRight.readY(), 0, 1024, 0, 255);  // JOY DER Y
+  // Ejes del cuadricóptero: "arriba" en el stick -> valor mayor
+  datos.yaw = map(joystickLeft.readX(), 0, 1024, 0, 255);  // stick IZQ horizontal
+  datos.throttle = map(joystickLeft.readY(), 0, 1024, 0, 255);  // stick IZQ vertical
+  datos.roll = map(joystickRight.readX(), 0, 1024, 0, 255);  // stick DER horizontal
+  datos.pitch = map(joystickRight.readY(), 0, 1024, 0, 255);  // stick DER vertical
 
   // Botones: con pull-up interno getButtonState() da 0 al
   // pulsar; se invierte para que pulsado = 1 y sin pulsar = 0
@@ -152,7 +153,7 @@ void loop() {
   // tope 1023 para usar el rango completo del ADC.
   datos.ch9 = map(analogRead(A7), 0, 1023, 0, 255);  // POT P1 (A7)
   datos.ch10 = map(analogRead(A6), 0, 1023, 0, 255);  // POT P2 (A6)
-
+  
   bool report = radio.write(&datos, sizeof(DatosRF));
 
   if (report) {

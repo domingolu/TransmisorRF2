@@ -2,9 +2,8 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
 ## Estado actual
-- v1.4: potenciómetros P1/P2 por ch9/ch10 implementados
-  (mapa de canales 10/10 completo); pendiente probar en
-  hardware. TX y RX probados en hardware.
+- v1.5: nomenclatura de ejes del cuadricóptero (yaw/throttle/roll/pitch)
+  en `DatosRF`, el firmware y la documentación.
 - TX: Nano con nuevo bootloader (`nanoatmega328new`), serie 115200.
 - RX: Pro Mini 3.3V/8MHz (`pro8MHzatmega328`), CE→D8, CSN→D10, serie 115200.
 - Los 11 entornos compilan (verificado con PlatformIO 6.2).
@@ -15,6 +14,7 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - Tests como entornos en src/tests/ con build_src_filter: src_dir por entorno no existe en PIO 6.x.
 - Todos los envs del TX usan nanoatmega328new: la placa física tiene el nuevo bootloader (flasheo a 115200; con nanoatmega328 el upload a 57600 puede fallar).
 - Mapa de canales completo (10/10 asignados): ch1-6 = joysticks (A0-A3, D0/D1); ch7-8 = switches L1/L2 (D3/D4, toggle, debounce 50 ms, 1=activado); ch9-10 = potenciómetros P1/P2 (A7/A6, mapeo directo, tope ADC 1023).
+- Campos de DatosRF renombrados a yaw/throttle/roll/pitch (ch1-ch4) porque el mando controla un cuadricóptero; ch5-ch10 conservan chN hasta que se defina su función en vuelo. Renombrar campos no cambia el formato en el aire (mismo orden y tipos), así que es compatible con firmwares previos.
 - Tasa ~50 Hz (delay 20 ms): 1 Hz original era inservible para un control remoto.
 - Botones con semántica 1=pulsado, 0=sin pulsar: ezButton con pull-up interno da 0 al pulsar, se invierte en el TX.
 - getButtonState() (nivel) y no isPressed() (flanco): nivel es adecuado para RC.

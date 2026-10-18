@@ -49,17 +49,20 @@
 #define RF_NUM_CANALES 10
 
 // Un byte por canal (0-255). ¡No cambiar el orden ni los tipos!
+// Los cuatro primeros canales son los ejes del cuadricóptero:
+//   yaw = stick izquierdo horizontal, throttle = izquierdo vertical
+//   roll = stick derecho horizontal, pitch = derecho vertical
 struct DatosRF {
-  byte ch1;
-  byte ch2;
-  byte ch3;
-  byte ch4;
-  byte ch5;
-  byte ch6;
-  byte ch7;
-  byte ch8;
-  byte ch9;
-  byte ch10;
+  byte yaw;      // ch1: stick izq. horizontal (A0)
+  byte throttle; // ch2: stick izq. vertical (A1)
+  byte roll;     // ch3: stick der. horizontal (A2)
+  byte pitch;    // ch4: stick der. vertical (A3)
+  byte ch5;      // botón joystick izquierdo (D0)
+  byte ch6;      // botón joystick derecho (D1)
+  byte ch7;      // switch L1 (D3)
+  byte ch8;      // switch L2 (D4)
+  byte ch9;      // potenciómetro P1 (A7)
+  byte ch10;     // potenciómetro P2 (A6)
 };
 
 /**
@@ -68,10 +71,10 @@ struct DatosRF {
  * Llamar en setup() antes de transmitir.
  */
 inline void inicializarDatosRF(DatosRF &d) {
-  d.ch1 = 127;
-  d.ch2 = 127;
-  d.ch3 = 127;
-  d.ch4 = 127;
+  d.yaw = 127;
+  d.throttle = 127;
+  d.roll = 127;
+  d.pitch = 127;
   d.ch5 = 0;
   d.ch6 = 0;
   d.ch7 = 0;

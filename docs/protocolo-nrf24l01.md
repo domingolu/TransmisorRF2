@@ -17,25 +17,55 @@ o en la configuración de radio se hace ahí, nunca duplicado en cada proyecto.
 
 ## Canales (estructura `DatosRF`)
 
-Un byte por canal (0-255). Los joysticks se mapean con
-`map(analogRead(pin), 0, 1024, 0, 255)` y los
-potenciómetros con `map(analogRead(pin), 0, 1023, 0, 255)`
-(rango completo del ADC). Botones y
-switches se envían con semántica **1 = activado, 0 = inactivo**
-y antirrebote de 50 ms (ezButton).
+Un byte por canal (0-255). Los cuatro primeros canales son los ejes
+de vuelo del cuadricóptero:
 
-| Canal | Señal | Pin TX (Nano) | Valor inicial |
+| Eje | Stick | Movimiento | Controla |
 |---|---|---|---|
-| ch1 | Joystick izquierdo, eje X | A0 | 127 (centro) |
-| ch2 | Joystick izquierdo, eje Y | A1 | 127 |
-| ch3 | Joystick derecho, eje X | A2 | 127 |
-| ch4 | Joystick derecho, eje Y | A3 | 127 |
-| ch5 | Botón joystick izquierdo (1 = pulsado) | D0 | 0 |
-| ch6 | Botón joystick derecho (1 = pulsado) | D1 | 0 |
-| ch7 | Switch L1 (1 = activado, tipo toggle) | D3 | 0 |
-| ch8 | Switch L2 (1 = activado, tipo toggle) | D4 | 0 |
-| ch9 | Potenciómetro P1 (mapeo directo) | A7 | 0 |
-| ch10 | Potenciómetro P2 (mapeo directo) | A6 | 0 |
+| **Throttle** | Izquierdo vertical | Arriba / abajo | Altura (subida / bajada) |
+| **Yaw** | Izquierdo horizontal | Izquierda / derecha | Rotación sobre su eje vertical |
+| **Pitch** | Derecho vertical | Arriba / abajo | Inclinación adelante / atrás |
+| **Roll** | Derecho horizontal | Izquierda / derecha | Inclinación lateral |
+
+Mapeo: los joysticks usan `map(analogRead(pin), 0, 1024, 0, 255)` y
+los potenciómetros `map(analogRead(pin), 0, 1023, 0, 255)` (rango
+completo del ADC). Botones y switches se envían con semántica
+**1 = activado, 0 = inactivo** y antirrebote de 50 ms (ezButton).
+
+| Canal | Campo | Señal | Pin TX (Nano) | Valor inicial |
+|---|---|---|---|---|
+| ch1 | `yaw` | Stick izquierdo horizontal (yaw) | A0 (VRX izq.) | 127 (centro) |
+| ch2 | `throttle` | Stick izquierdo vertical (throttle) | A1 (VRY izq.) | 127 |
+| ch3 | `roll` | Stick derecho horizontal (roll) | A2 (VRX der.) | 127 |
+| ch4 | `pitch` | Stick derecho vertical (pitch) | A3 (VRY der.) | 127 |
+| ch5 | `ch5` | Botón joystick izquierdo (1 = pulsado) | D0 | 0 |
+| ch6 | `ch6` | Botón joystick derecho (1 = pulsado) | D1 | 0 |
+| ch7 | `ch7` | Switch L1 (1 = activado, tipo toggle) | D3 | 0 |
+| ch8 | `ch8` | Switch L2 (1 = activado, tipo toggle) | D4 | 0 |
+| ch9 | `ch9` | Potenciómetro P1 (mapeo directo) | A7 | 0 |
+| ch10 | `ch10` | Potenciómetro P2 (mapeo directo) | A6 | 0 |
+
+### Semántica de valores
+
+- **Centro = 127**: es el valor neutro inicial de los cuatro ejes
+  (stick al centro). El firmware lo carga en `inicializarDatosRF()`
+  y se sobreescribe con la lectura real en el primer `loop()`.
+- **"Arriba" en el stick = valor mayor** (255) y "abajo" = valor
+  menor (0). Para invertir un eje, se intercambian los extremos del
+  `map()` (ver el ejemplo en `transmitter/src/main.cpp`).
+- **Throttle**: 127 es el centro *geométrico* del stick, no el idle
+  de vuelo. En un cuadricóptero el idle se recorta por software en
+  el lado del controlador de vuelo (mezcla/failsafe), no en el mando.
+- **Botones y switches**: 1 = activado/pulsado, 0 = inactivo.
+  Los switches son tipo toggle (el valor queda en 1 mientras están
+  en esa posición).
+
+> **Nota de nomenclatura:** los campos `yaw`, `throttle`, `roll` y
+> `pitch` de `DatosRF` reemplazan a los antiguos `ch1`–`ch4`. El orden
+> y los tipos no cambiaron, así que el formato en el aire es idéntico
+> (compatible con firmwares previos). ch5–ch10 conservaron el nombre
+> `chN` porque su función (botones, switches, potenciómetros) todavía
+> no está definida para el vuelo.
 
 > **Nota de migración:** el código original del transmisor (repo `TransmisorRF`)
 > tenía un comentario que describía otra distribución (ch3 = botón izquierdo,

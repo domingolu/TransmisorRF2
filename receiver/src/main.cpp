@@ -24,7 +24,7 @@
  * - Configurar el monitor serie a 115200 baudios.
  *
  * Formato de salida:
- *   "CH1: 128 | CH2: 127 | ... | CH10: 0"
+ *   "YAW: 128 | THROTTLE: 127 | ROLL: 127 | PITCH: 127 | ... | CH10: 0"
  */
 
 #include <Arduino.h>
@@ -77,17 +77,18 @@ void loop() {
     radio.read(&datos, sizeof(DatosRF));
 
     // Muestra los diez canales en una sola línea.
-    Serial.print(F("CH1: "));
-    Serial.print(datos.ch1);
+    // Los cuatro primeros son los ejes del cuadricóptero.
+    Serial.print(F("YAW: "));
+    Serial.print(datos.yaw);
 
-    Serial.print(F(" | CH2: "));
-    Serial.print(datos.ch2);
+    Serial.print(F(" | THROTTLE: "));
+    Serial.print(datos.throttle);
 
-    Serial.print(F(" | CH3: "));
-    Serial.print(datos.ch3);
+    Serial.print(F(" | ROLL: "));
+    Serial.print(datos.roll);
 
-    Serial.print(F(" | CH4: "));
-    Serial.print(datos.ch4);
+    Serial.print(F(" | PITCH: "));
+    Serial.print(datos.pitch);
 
     Serial.print(F(" | CH5: "));
     Serial.print(datos.ch5);

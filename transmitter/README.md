@@ -16,6 +16,10 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
 - Lee los dos joysticks (ejes X/Y y botones con antirrebote,
   vía la librería propia `Joystick`) y transmite los 10 canales
   por RF al receptor a ~50 Hz.
+- Los cuatro primeros canales son los ejes de vuelo del cuadricóptero:
+  stick izquierdo vertical = **throttle**, izquierdo horizontal = **yaw**,
+  derecho vertical = **pitch**, derecho horizontal = **roll**
+  (centro = 127; "arriba" = valor mayor).
 - Botones con semántica 1 = pulsado, 0 = sin pulsar
   (pull-up interno invertido en el firmware).
 - Switches L1/L2 (D3/D4, tipo toggle) por ch7/ch8 con

@@ -12,8 +12,9 @@ Receptor RF (RX) hecho con Arduino Pro Mini que servirá como base para proyecto
 ## Funcionalidades
 
 - Recibe paquetes de 10 canales (1 byte cada uno) del transmisor.
-- Los muestra por el puerto serie en una sola línea:
-  `CH1: 128 | CH2: 127 | ... | CH10: 0`
+- Los muestra por el puerto serie en una sola línea, con los cuatro
+  primeros etiquetados por su eje de vuelo:
+  `YAW: 128 | THROTTLE: 127 | ROLL: 127 | PITCH: 127 | ... | CH10: 0`
 - **Primer versión probada en hardware (funciona).**
 - No genera señales PWM ni controla servomotores todavía (siguiente paso).
 
