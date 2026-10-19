@@ -17,6 +17,9 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - Todos los envs del TX usan nanoatmega328new: la placa física tiene el nuevo bootloader (flasheo a 115200; con nanoatmega328 el upload a 57600 puede fallar).
 - Mapa de canales completo (10/10 asignados): ch1-6 = joysticks (A0-A3, D0/D1); ch7-8 = switches L1/L2 (D3/D4, toggle, debounce 50 ms, 1=activado); ch9-10 = potenciómetros P1/P2 (A7/A6, mapeo directo, tope ADC 1023).
 - Campos de DatosRF renombrados a yaw/throttle/roll/pitch (ch1-ch4) porque el mando controla un cuadricóptero; ch5-ch10 conservan chN hasta que se defina su función en vuelo. Renombrar campos no cambia el formato en el aire (mismo orden y tipos), así que es compatible con firmwares previos.
+- Ejes del stick mapeados con `mapJoystickValues()`: calibración por eje (`CalibracionEje`), centro fijo en 127 y flag `reverse` por eje. Se adopta la idea del proyecto de referencia NRF24_6CH (resetData/mapJoystickValues) pero con centro 127 (no 128) y sin `resetData` propio (ya está `inicializarDatosRF()` en la librería compartida).
+- Throttle arranca en 0 (motores detenidos): más seguro que el centro 127 al navegar.
+- Calibración con valores genéricos (0/512/1023) hasta medir el hardware real; pendiente la feature de calibración con OLED + pulsadores (y hacer configurables los flags `reverse`).
 - Tasa ~50 Hz (delay 20 ms): 1 Hz original era inservible para un control remoto.
 - Botones con semántica 1=pulsado, 0=sin pulsar: ezButton con pull-up interno da 0 al pulsar, se invierte en el TX.
 - getButtonState() (nivel) y no isPressed() (flanco): nivel es adecuado para RC.
@@ -30,6 +33,7 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - D0/D1 (UART) funcionaron en la prueba real del TX; si hay fallas de serie, mover pines.
 
 ## Próximos pasos
-- Probar en hardware que cada stick mueve el eje correcto (yaw/throttle/roll/pitch) e invertir los que haga falta.
+- Medir el rango real de cada eje (el monitor imprime el crudo) y cargar los valores en `CalibracionEje`; verificar que cada stick mueva el eje correcto (e invertir los que haga falta).
 - Probar los potenciómetros P1/P2 (ch9/ch10) en hardware.
+- Feature de calibración con OLED + pulsadores (y flags `reverse` configurables).
 - Pantalla OLED en A4/A5 (librería Pantalla ya existe).

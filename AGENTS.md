@@ -49,6 +49,10 @@ Mini + nRF24L01+). Monorepo PlatformIO.
 - Ejes de vuelo (cuadricóptero): ch1 = `yaw` (stick izq. horizontal),
   ch2 = `throttle` (izq. vertical), ch3 = `roll` (der. horizontal),
   ch4 = `pitch` (der. vertical); ch5-ch10 sin nombre de vuelo todavía.
+- Los 4 ejes del stick se mapean con `mapJoystickValues()`
+  (`transmitter/src/main.cpp`): calibración por eje (`CalibracionEje`),
+  centro fijo en **127** y flag `reverse` por eje (ninguno invertido).
+  Valores de calibración genéricos (0/512/1023) hasta medir el hardware.
 - Mapa de canales y cableado: `docs/protocolo-nrf24l01.md` y
   `docs/hardware/wiring.md`. El mapa refleja el comportamiento real del código (el comentario del viejo `Transmitter.ino` describía otra
   distribución que nunca se cableó).

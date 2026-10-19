@@ -35,7 +35,7 @@ completo del ADC). Botones y switches se envían con semántica
 | Canal | Campo | Señal | Pin TX (Nano) | Valor inicial |
 |---|---|---|---|---|
 | ch1 | `yaw` | Stick izquierdo horizontal (yaw) | A0 (VRX izq.) | 127 (centro) |
-| ch2 | `throttle` | Stick izquierdo vertical (throttle) | A1 (VRY izq.) | 127 |
+| ch2 | `throttle` | Stick izquierdo vertical (throttle) | A1 (VRY izq.) | 0 (motores detenidos) |
 | ch3 | `roll` | Stick derecho horizontal (roll) | A2 (VRX der.) | 127 |
 | ch4 | `pitch` | Stick derecho vertical (pitch) | A3 (VRY der.) | 127 |
 | ch5 | `ch5` | Botón joystick izquierdo (1 = pulsado) | D0 | 0 |
@@ -47,18 +47,48 @@ completo del ADC). Botones y switches se envían con semántica
 
 ### Semántica de valores
 
-- **Centro = 127**: es el valor neutro inicial de los cuatro ejes
-  (stick al centro). El firmware lo carga en `inicializarDatosRF()`
-  y se sobreescribe con la lectura real en el primer `loop()`.
+- **Centro = 127**: es el valor neutro de los cuatro ejes (stick al
+  centro). El firmware lo carga en `inicializarDatosRF()` y se
+  sobreescribe con la lectura real en el primer `loop()`.
+- **Throttle arranca en 0** (motores detenidos): es lo más seguro
+  hasta que el piloto mueva el stick. El 127 es el centro
+  *geométrico* del stick, no el idle de vuelo; en un cuadricóptero el
+  idle se recorta por software del lado del controlador de vuelo
+  (mezcla/failsafe), no en el mando.
 - **"Arriba" en el stick = valor mayor** (255) y "abajo" = valor
-  menor (0). Para invertir un eje, se intercambian los extremos del
-  `map()` (ver el ejemplo en `transmitter/src/main.cpp`).
-- **Throttle**: 127 es el centro *geométrico* del stick, no el idle
-  de vuelo. En un cuadricóptero el idle se recorta por software en
-  el lado del controlador de vuelo (mezcla/failsafe), no en el mando.
+  menor (0).
 - **Botones y switches**: 1 = activado/pulsado, 0 = inactivo.
   Los switches son tipo toggle (el valor queda en 1 mientras están
   en esa posición).
+
+### Calibración de los ejes
+
+Cada eje se mapea con su propia calibración (extremos y centro
+reales del joystick), definida en `transmitter/src/main.cpp` con la
+estructura `CalibracionEje`:
+
+| Eje | Campo de `CalibracionEje` | Notas |
+|---|---|---|
+| yaw | `calibYaw` | stick izquierdo horizontal (A0) |
+| throttle | `calibThrottle` | stick izquierdo vertical (A1) |
+| roll | `calibRoll` | stick derecho horizontal (A2) |
+| pitch | `calibPitch` | stick derecho vertical (A3) |
+
+- `lower` / `middle` / `upper`: valores del ADC (0-1023) en el
+  extremo inferior, el centro y el extremo superior del stick.
+  Hoy son **valores genéricos** (0 / 512 / 1023); hay que ajustarlos
+  al rango real de cada joystick.
+- `reverse`: invierte el eje. **Ningún eje arranca invertido**; se
+  ajusta cuando se pruebe en hardware.
+- El centro calibrado se mapea siempre a **127** (neutro), sea cual
+  sea el `middle` de cada eje.
+- El monitor serie del transmisor imprime el valor crudo (0-1023)
+  junto al mapeado (p. ej. `yaw=127(raw 512)`) para poder medir el
+  rango real de cada eje.
+
+> **Pendiente:** feature de calibración con ayuda de la pantalla
+> OLED y los pulsadores (ajustar `CalibracionEje` en runtime) y
+> hacer configurables los flags `reverse` desde el mismo menú.
 
 > **Nota de nomenclatura:** los campos `yaw`, `throttle`, `roll` y
 > `pitch` de `DatosRF` reemplazan a los antiguos `ch1`–`ch4`. El orden

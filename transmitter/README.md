@@ -19,7 +19,11 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
 - Los cuatro primeros canales son los ejes de vuelo del cuadricóptero:
   stick izquierdo vertical = **throttle**, izquierdo horizontal = **yaw**,
   derecho vertical = **pitch**, derecho horizontal = **roll**
-  (centro = 127; "arriba" = valor mayor).
+  (centro = 127; "arriba" = valor mayor). El throttle arranca en 0
+  (motores detenidos) hasta que se mueva el stick.
+- Cada eje se calibra por su rango real (`CalibracionEje` en
+  `src/main.cpp`); hoy se usan valores genéricos (0/512/1023) y
+  ningún eje está invertido.
 - Botones con semántica 1 = pulsado, 0 = sin pulsar
   (pull-up interno invertido en el firmware).
 - Switches L1/L2 (D3/D4, tipo toggle) por ch7/ch8 con
@@ -28,7 +32,8 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
   directo 0-255 (tope de ADC 1023).
 - Estructura de datos y configuración de radio compartidas con el
   receptor (`libraries/ProtocoloRF`).
-- Muestra por monitor serie los valores transmitidos.
+- Muestra por monitor serie los valores transmitidos, con la lectura
+  cruda (0-1023) de cada eje para poder calibrar.
 
 ## Librerías propias
 

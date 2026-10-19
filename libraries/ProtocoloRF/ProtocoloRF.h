@@ -67,12 +67,13 @@ struct DatosRF {
 
 /**
  * Inicializa los canales con valores neutros:
- * analógicos al centro (127) y digitales en 0.
+ * analógicos al centro (127), digitales en 0 y throttle en 0
+ * (motores detenidos al arrancar: es lo más seguro).
  * Llamar en setup() antes de transmitir.
  */
 inline void inicializarDatosRF(DatosRF &d) {
   d.yaw = 127;
-  d.throttle = 127;
+  d.throttle = 0;
   d.roll = 127;
   d.pitch = 127;
   d.ch5 = 0;

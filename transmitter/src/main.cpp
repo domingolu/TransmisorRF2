@@ -26,6 +26,9 @@
  *   ch9   POT P1      -> A7   (0-255, mapeo directo)
  *   ch10  POT P2      -> A6   (0-255, mapeo directo)
  *
+ * Los 4 ejes del stick se calibran por eje (ver CalibracionEje) y se
+ * mapean a 0-255 con el centro fijo en 127 (neutro).
+ *
  * Tasa de transmisión: ~50 Hz (un paquete cada 20 ms).
  *
  * Nota: D0 y D1 son los pines RX/TX del UART; usarlos como entradas
@@ -54,19 +57,69 @@ Joystick joystickRight(A2, A3, 1);
 ezButton switchL1(3);
 ezButton switchL2(4);
 
+// Calibración por eje del stick: extremos y centro reales de cada
+// joystick. Valores genéricos por ahora (0 = mínimo, 512 = centro,
+// 1023 = máximo); se ajustan al medir el rango real de cada eje.
+// reverse: invierte el eje (ninguno arranca invertido).
+struct CalibracionEje {
+  int lower;
+  int middle;
+  int upper;
+  bool reverse;
+};
+
+const CalibracionEje calibYaw      = { 0, 512, 1023, false };
+const CalibracionEje calibThrottle = { 0, 512, 1023, false };
+const CalibracionEje calibRoll     = { 0, 512, 1023, false };
+const CalibracionEje calibPitch    = { 0, 512, 1023, false };
+
+// Lecturas crudas (0-1023) de los 4 ejes: permiten ver el rango
+// real de cada joystick y calcular su calibración.
+struct LecturasEjes {
+  int yaw;
+  int throttle;
+  int roll;
+  int pitch;
+};
+
+/**
+ * Corrige la lectura de un eje según su calibración y lo mapea a
+ * 0-255 con el centro fijo en 127 (neutro).
+ *
+ * @param val     lectura cruda del ADC (0-1023)
+ * @param lower   valor del extremo inferior del stick
+ * @param middle  valor del centro del stick
+ * @param upper   valor del extremo superior del stick
+ * @param reverse true para invertir el eje
+ */
+static int mapJoystickValues(int val, int lower, int middle, int upper, bool reverse) {
+  val = constrain(val, lower, upper);
+  val = (val < middle) ? map(val, lower, middle, 0, 127)
+                        : map(val, middle, upper, 127, 255);
+  return reverse ? 255 - val : val;
+}
+
 // Datos a transmitir (estructura definida en ProtocoloRF.h)
 DatosRF datos;
 
-void printData(const DatosRF &d) {
+void printData(const DatosRF &d, const LecturasEjes &raw) {
   Serial.print(F("yaw="));
   Serial.print(d.yaw);
-  Serial.print(F(", throttle="));
+  Serial.print(F("(raw "));
+  Serial.print(raw.yaw);
+  Serial.print(F("), throttle="));
   Serial.print(d.throttle);
-  Serial.print(F(", roll="));
+  Serial.print(F("(raw "));
+  Serial.print(raw.throttle);
+  Serial.print(F("), roll="));
   Serial.print(d.roll);
-  Serial.print(F(", pitch="));
+  Serial.print(F("(raw "));
+  Serial.print(raw.roll);
+  Serial.print(F("), pitch="));
   Serial.print(d.pitch);
-  Serial.print(F(", ch5="));
+  Serial.print(F("(raw "));
+  Serial.print(raw.pitch);
+  Serial.print(F("), ch5="));
   Serial.print(d.ch5);
   Serial.print(F(", ch6="));
   Serial.print(d.ch6);
@@ -126,15 +179,19 @@ void loop() {
   switchL1.loop();
   switchL2.loop();
 
-  /* Si un eje está invertido, intercambia 0 y 255:
-     Normal:    datos.yaw = map(joystickLeft.readX(), 0, 1024, 0, 255);
-     Invertido: datos.yaw = map(joystickLeft.readX(), 0, 1024, 255, 0); */
+  // Lecturas crudas de los 4 ejes (0-1023)
+  LecturasEjes crudos;
+  crudos.yaw = joystickLeft.readX();
+  crudos.throttle = joystickLeft.readY();
+  crudos.roll = joystickRight.readX();
+  crudos.pitch = joystickRight.readY();
 
-  // Ejes del cuadricóptero: "arriba" en el stick -> valor mayor
-  datos.yaw = map(joystickLeft.readX(), 0, 1024, 0, 255);  // stick IZQ horizontal
-  datos.throttle = map(joystickLeft.readY(), 0, 1024, 0, 255);  // stick IZQ vertical
-  datos.roll = map(joystickRight.readX(), 0, 1024, 0, 255);  // stick DER horizontal
-  datos.pitch = map(joystickRight.readY(), 0, 1024, 0, 255);  // stick DER vertical
+  // Ejes del cuadricóptero: calibración por eje, centro fijo en
+  // 127 y "arriba" en el stick -> valor mayor.
+  datos.yaw = mapJoystickValues(crudos.yaw, calibYaw.lower, calibYaw.middle, calibYaw.upper, calibYaw.reverse);
+  datos.throttle = mapJoystickValues(crudos.throttle, calibThrottle.lower, calibThrottle.middle, calibThrottle.upper, calibThrottle.reverse);
+  datos.roll = mapJoystickValues(crudos.roll, calibRoll.lower, calibRoll.middle, calibRoll.upper, calibRoll.reverse);
+  datos.pitch = mapJoystickValues(crudos.pitch, calibPitch.lower, calibPitch.middle, calibPitch.upper, calibPitch.reverse);
 
   // Botones: con pull-up interno getButtonState() da 0 al
   // pulsar; se invierte para que pulsado = 1 y sin pulsar = 0
@@ -158,7 +215,7 @@ void loop() {
 
   if (report) {
     Serial.print(F("se transmite "));  // payload entregado
-    printData(datos);
+    printData(datos, crudos);
   } else {
     Serial.println(F("Transmission failed or timed out"));  // no entregado
   }
