@@ -4,6 +4,8 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 ## Estado actual
 - v1.5: nomenclatura de ejes del cuadricóptero (yaw/throttle/roll/pitch)
   en `DatosRF`, el firmware y la documentación.
+- Repo público en GitHub: github.com/domingolu/TransmisorRF2
+  (rama `main`, remoto `origin`; auth con Git Credential Manager).
 - TX: Nano con nuevo bootloader (`nanoatmega328new`), serie 115200.
 - RX: Pro Mini 3.3V/8MHz (`pro8MHzatmega328`), CE→D8, CSN→D10, serie 115200.
 - Los 11 entornos compilan (verificado con PlatformIO 6.2).
@@ -28,6 +30,6 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - D0/D1 (UART) funcionaron en la prueba real del TX; si hay fallas de serie, mover pines.
 
 ## Próximos pasos
-- Crear repo en GitHub (domingolu/TransmisorRF2) y hacer push.
+- Probar en hardware que cada stick mueve el eje correcto (yaw/throttle/roll/pitch) e invertir los que haga falta.
 - Probar los potenciómetros P1/P2 (ch9/ch10) en hardware.
 - Pantalla OLED en A4/A5 (librería Pantalla ya existe).
