@@ -18,7 +18,9 @@ Mini + nRF24L01+). Monorepo PlatformIO.
 - Cada test de hardware es un entorno: `-e test-botones`,
   `-e test-joystick`, `-e test-potenciometros`, `-e test-switches`,
   `-e test-pantalla-32`, `-e test-pantalla-64`, `-e test-pantalla-lib`,
-  `-e test-getting-started`. Los 11 entornos compilan (verificado).
+  `-e test-getting-started`. Los 12 entornos compilan (verificado).
+- `-e wokwi` compila el firmware para el simulador de Wokwi (ver
+  `transmitter/README.md`).
 - `TransmisorRF.code-workspace` abre el repo como multi-root
   (`.`, `transmitter/`, `receiver/`).
 

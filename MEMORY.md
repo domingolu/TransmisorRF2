@@ -8,7 +8,13 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
   (rama `main`, remoto `origin`; auth con Git Credential Manager).
 - TX: Nano con nuevo bootloader (`nanoatmega328new`), serie 115200.
 - RX: Pro Mini 3.3V/8MHz (`pro8MHzatmega328`), CE→D8, CSN→D10, serie 115200.
-- Los 11 entornos compilan (verificado con PlatformIO 6.2).
+- Los 12 entornos compilan (verificado con PlatformIO 6.2).
+- Simulación Wokwi del TX lista: `transmitter/diagram.json` +
+  `transmitter/wokwi.toml` + entorno `[env:wokwi]` (verificado con
+  `wokwi-cli lint` y `pio run -e wokwi`).
+- **Panel OLED en el TX** (`lib/Panel/`): muestra los 10 canales, las
+  lecturas crudas de los 4 ejes y el estado/contador del envío.
+  Refresco por páginas sucias; la pantalla es opcional (no bloquea).
 
 ## Decisiones (y por qué)
 - Monorepo único (transmitter/ + receiver/): el protocolo RF es compartido y debe versionarse junto con ambos firmwares.
@@ -23,6 +29,32 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - Tasa ~50 Hz (delay 20 ms): 1 Hz original era inservible para un control remoto.
 - Botones con semántica 1=pulsado, 0=sin pulsar: ezButton con pull-up interno da 0 al pulsar, se invierte en el TX.
 - getButtonState() (nivel) y no isPressed() (flanco): nivel es adecuado para RC.
+- Simulación Wokwi: el enlace RF NO se puede simular (Wokwi no tiene parte
+  oficial para el nRF24L01+). Se resolvió con un stub header-only de RF24
+  en `transmitter/wokwi-lib/RF24/`, enlazado solo en `[env:wokwi]` vía
+  `lib_extra_dirs`: el firmware real compila sin cambios. El stub va en
+  `wokwi-lib/` (no en `lib/`) porque si estuviera en `lib/` el LDF lo
+  enlazaría también en `[env:firmware]`.
+- El diagrama se valida con `wokwi-cli lint` (binario de GitHub releases;
+  en Windows `wokwi-cli-win-x64.exe`): detecta pines y atributos
+  inválidos, es la única verificación sin abrir el simulador.
+  `wokwi-cli run` pide WOKWI_CLI_TOKEN (cuenta Wokwi): no hay simulación
+  headless sin token.
+- Panel OLED: refresco por páginas sucias (PAGEADDR + 128 B, ~3 ms) en vez
+  de refresco completo (~24 ms), porque un refresco completo en cada
+  ciclo de 20 ms del TX (50 Hz) frenaría la radio. Cada fila de texto de
+  8 px = una página del OLED (buffer indexado `buffer[x + (y/8)*WIDTH]`).
+- La pantalla es **opcional**: `Pantalla::iniciar()` devuelve false y no
+  bloquea si no está conectada (un mando de vuelo debe volar sin ella).
+- RAM real del TX con OLED = ~1789 B de 2048 (87 %): el framebuffer del
+  SSD1306 son 1024 B de `malloc()` que NO salen en el reporte de
+  PlatformIO. Quedan ~259 B de stack; la cadena más profunda del panel
+  usa ~141 B. Fallback a 128x32 si hiciera falta (512 B de buffer).
+- `Wire` en AVR tiene buffer de 32 B y `write(buf, n)` con n > 32
+  DESCARTA el sobrante: trocear las transferencias (lo hace Adafruit con
+  WIRE_MAX=32).
+- `ssd1306_commandList()` es `protected`; usar `ssd1306_command()` o
+  `Wire` directamente (y `getBuffer()` es público).
 
 ## Aprendizajes y errores a evitar
 - PIO 6.2: src_dir solo en [platformio]; usar build_src_filter por entorno.
@@ -33,7 +65,6 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - D0/D1 (UART) funcionaron en la prueba real del TX; si hay fallas de serie, mover pines.
 
 ## Próximos pasos
-- Medir el rango real de cada eje (el monitor imprime el crudo) y cargar los valores en `CalibracionEje`; verificar que cada stick mueva el eje correcto (e invertir los que haga falta).
+- Medir el rango real de cada eje (el monitor imprime el crudo) y cargar los valores en CalibracionEje; verificar que cada stick mueva el eje correcto (e invertir los que haga falta).
 - Probar los potenciómetros P1/P2 (ch9/ch10) en hardware.
 - Feature de calibración con OLED + pulsadores (y flags `reverse` configurables).
-- Pantalla OLED en A4/A5 (librería Pantalla ya existe).

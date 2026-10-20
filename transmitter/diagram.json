@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "author": "Domingo García",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "id": "nano",
+      "type": "wokwi-arduino-nano",
+      "left": 20,
+      "top": 220
+    },
+    {
+      "id": "joystickL",
+      "type": "wokwi-analog-joystick",
+      "left": 260,
+      "top": 180
+    },
+    {
+      "id": "joystickR",
+      "type": "wokwi-analog-joystick",
+      "left": 260,
+      "top": 340
+    },
+    {
+      "id": "potP1",
+      "type": "wokwi-potentiometer",
+      "left": 450,
+      "top": 180,
+      "attrs": {
+        "value": "512"
+      }
+    },
+    {
+      "id": "potP2",
+      "type": "wokwi-potentiometer",
+      "left": 450,
+      "top": 280,
+      "attrs": {
+        "value": "512"
+      }
+    },
+    {
+      "id": "swL1",
+      "type": "wokwi-slide-switch",
+      "left": 450,
+      "top": 380
+    },
+    {
+      "id": "swL2",
+      "type": "wokwi-slide-switch",
+      "left": 450,
+      "top": 470
+    },
+    {
+      "id": "oled",
+      "type": "board-ssd1306",
+      "left": 620,
+      "top": 40,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "id": "notaRf",
+      "type": "wokwi-text",
+      "left": 20,
+      "top": 40,
+      "attrs": {
+        "text": "nRF24L01+ - NO se simula en Wokwi (no hay parte oficial).\nCableado real: GND->GND, VCC->3.3V, CE->D9, CSN->D10,\nSCK->D13, MOSI->D11, MISO->D12"
+      }
+    }
+  ],
+  "connections": [
+    ["joystickL:VCC", "nano:5V", "red", []],
+    ["joystickL:GND", "nano:GND.1", "black", []],
+    ["joystickL:HORZ", "nano:A0", "green", []],
+    ["joystickL:VERT", "nano:A1", "orange", []],
+    ["joystickL:SEL", "nano:0", "purple", []],
+
+    ["joystickR:VCC", "nano:5V", "red", []],
+    ["joystickR:GND", "nano:GND.1", "black", []],
+    ["joystickR:HORZ", "nano:A2", "green", []],
+    ["joystickR:VERT", "nano:A3", "orange", []],
+    ["joystickR:SEL", "nano:1", "purple", []],
+
+    ["potP1:VCC", "nano:5V", "red", []],
+    ["potP1:GND", "nano:GND.1", "black", []],
+    ["potP1:SIG", "nano:A7", "green", []],
+
+    ["potP2:VCC", "nano:5V", "red", []],
+    ["potP2:GND", "nano:GND.1", "black", []],
+    ["potP2:SIG", "nano:A6", "green", []],
+
+    ["swL1:2", "nano:3", "green", []],
+    ["swL1:3", "nano:GND.1", "black", []],
+
+    ["swL2:2", "nano:4", "green", []],
+    ["swL2:3", "nano:GND.1", "black", []],
+
+    ["oled:VCC", "nano:5V", "red", []],
+    ["oled:GND", "nano:GND.1", "black", []],
+    ["oled:SDA", "nano:A4", "cyan", []],
+    ["oled:SCL", "nano:A5", "blue", []]
+  ],
+  "serialMonitor": {
+    "display": "always"
+  }
+}
