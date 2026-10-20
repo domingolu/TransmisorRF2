@@ -34,11 +34,47 @@ Transmisor RF (TX) hecho con Arduino Nano que servirá como mando a distancia pa
   receptor (`libraries/ProtocoloRF`).
 - Muestra por monitor serie los valores transmitidos, con la lectura
   cruda (0-1023) de cada eje para poder calibrar.
+- **Panel en la pantalla OLED** (opcional): muestra los canales que se
+  transmiten, las lecturas crudas y el estado del envío. Ver
+  [Panel OLED](#panel-oled).
 
 ## Librerías propias
 
 - `lib/Joystick/` — lectura de joystick analógico con botón (antirrebote; usa ezButton)
 - `lib/Pantalla/` — pantalla OLED SSD1306 I2C (usa Adafruit GFX / SSD1306)
+- `lib/Panel/` — panel de información del TX sobre la pantalla OLED
+
+## Panel OLED
+
+La pantalla OLED SSD1306 128x64 (SDA → A4, SCL → A5, dirección 0x3C)
+muestra el estado del transmisor:
+
+```
+YAW 255  THR    0     <- canales 1 y 2 (yaw, throttle)
+RLL 127  PIT    3     <- canales 3 y 4 (roll, pitch)
+CH5   1  CH6    0     <- canales 5-10 (botones, switches, potenciómetros)
+CH7   1  CH8    0
+CH9 200  CH10   99
+rawY1023 rawT    0     <- lecturas crudas del ADC (0-1023) de los 4 ejes
+rawR 512 rawP    7
+TX OK pkts 65535        <- estado del envío y paquetes enviados
+```
+
+- **Es opcional**: si la pantalla no está conectada, `Pantalla::iniciar()`
+  devuelve `false` y el transmisor sigue funcionando igual (solo se pierde
+  la información visual). Para un mando de vuelo es preferible volar sin
+  pantalla a quedarse bloqueado.
+- **Refresco por páginas**: cada fila de texto de 8 px ocupa exactamente
+  una página del OLED, así que al cambiar un dato solo se repinta y se
+  envía esa página (~3 ms por I2C) en lugar de la pantalla entera
+  (~24 ms). Así el refresco no frena el envío a 50 Hz.
+- **Recursos**: el framebuffer del SSD1306 (1024 B) se reserva con
+  `malloc()`, así que **no** aparece en el reporte de RAM de PlatformIO
+  (que solo cuenta `.data` + `.bss`). El RAM real es ~1789 B de 2048 B
+  (87 %), con unos 259 B libres para el stack.
+- Si el simulador de Wokwi no implementara el comando `PAGEADDR`, se
+  puede cambiar a refresco completo con `PANTALLA_REFRESCO_PAGINAS 0`
+  en `lib/Pantalla/Pantalla.h`.
 
 ## Tests de hardware
 
@@ -82,7 +118,8 @@ Archivos de la simulación:
 ### Qué se simula y qué no
 
 - **Se simula**: los dos joysticks (ejes + botón), los dos
-  potenciómetros, los dos switches y la lectura de la pantalla OLED.
+  potenciómetros, los dos switches y **la pantalla OLED con el panel**
+  (canales, lecturas crudas y estado del envío).
 - **No se simula**: el enlace RF. Wokwi no tiene una parte oficial para el
   `nRF24L01+`, así que el entorno `[env:wokwi]` usa un **stub** de la
   librería RF24 (`wokwi-lib/RF24/`) que implementa solo la parte de la API

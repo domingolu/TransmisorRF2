@@ -42,8 +42,8 @@ SPI es común en ambas placas: D11 (MOSI), D12 (MISO), D13 (SCK).
 | Botones | D5, D6, D7, D8 (ezButton) |
 | Pantalla OLED SSD1306 (I2C) | SDA → A4, SCL → A5, VCC → 5V/3.3V según módulo, GND → GND (dirección 0x3C) |
 
-⚠️ A4/A5 son SDA/SCL de I2C: A4 queda reservado en el
-firmware (ch7) para la pantalla OLED futura.
+⚠️ A4/A5 son SDA/SCL de I2C: los usa la pantalla OLED del panel
+(ver `../transmitter/README.md`). No son pines digitales de uso general.
 
 ⚠️ D0/D1 son RX/TX del UART del Nano; los botones de los joysticks están
 ahí en el wiring actual y pueden interferir con el monitor serie por USB.

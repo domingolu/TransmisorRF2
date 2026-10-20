@@ -66,12 +66,29 @@ Mini + nRF24L01+). Monorepo PlatformIO.
 - avr-gcc rechaza identificadores no ASCII (`tamaño` → `tamanio`). UTF-8 en comentarios sí funciona.
 - Adafruit_GFX no tiene `textWidth`; medir texto con `getTextBounds`.
 - Las librerías locales header-only necesitan `library.properties` en su carpeta para que PlatformIO las reconozca.
+- El buffer del SSD1306 (1024 B en 128x64) se reserva con `malloc()`: **no**
+  aparece en el RAM que reporta PlatformIO (solo cuenta `.data` + `.bss`).
+  El RAM real = estáticos + buffer + stack (medido: 1789 B de 2048, ~259 B
+  libres para el stack; la cadena más profunda del panel usa ~141 B).
+- Un refresco completo de 128x64 son 1024 B por I2C ≈ 24 ms a 400 kHz
+  (≈ 92 ms a 100 kHz): no se puede refrescar la pantalla en cada ciclo de
+  20 ms del TX (50 Hz) sin pausar la radio.
+- Wire en AVR tiene un buffer de 32 B: `Wire.write(buf, n)` con n > 32
+  **descarta** los bytes que sobran (`setWriteError`). Hay que trocear en
+  trozos de ≤ 32 B con `endTransmission()`/`beginTransmission()` entre ellos.
+- Cada fila de texto de 8 px del GFX ocupa exactamente una página del
+  SSD1306 (buffer indexado como `buffer[x + (y/8)*WIDTH]`): el refresco por
+  páginas sucias se hace con `PAGEADDR` + 128 B por página.
+- `Adafruit_SSD1306::ssd1306_commandList()` es `protected`; los públicos
+  son `ssd1306_command()` y `getBuffer()`.
 
 ## Convenciones
 
 - Textos en español.
 - Código simple, nombres descriptivos y comentarios solo donde aporten.
 - Antes de implementar cambios, revisar el hardware y la estructura existentes en el repositorio.
+- Las pantallas OLED son siempre opcionales y no bloquean el flujo
+  principal: un mando de vuelo debe funcionar sin pantalla.
 
 ## Forma de trabajar
 

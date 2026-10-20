@@ -12,14 +12,17 @@
 Pantalla pantalla;  // Instancia de nuestra biblioteca
 
 void setup() {
-  pantalla.iniciar();          // Inicializa la pantalla
+  // iniciar() no bloquea: si no hay pantalla, se avisa y se sigue.
+  if (!pantalla.iniciar()) {
+    return;
+  }
 
   pantalla.limpiar();          // Opcional: empezar con pantalla limpia
 
   pantalla.mostrarMensaje("Hello Word");  // Mensaje centrado
   pantalla.dibujarEsquinas();             // Píxeles en las esquinas
 
-  pantalla.actualizar();       // Enviar todo a la pantalla
+  pantalla.refrescarTodo();   // Enviar todo a la pantalla
 }
 
 void loop() {

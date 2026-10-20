@@ -39,12 +39,19 @@
 #include <ProtocoloRF.h>
 #include <ezButton.h>
 #include "Joystick.h"
+#include "Pantalla.h"
+#include "Panel.h"
 
 #define CE_PIN 9
 #define CSN_PIN 10
 
 // Instancia del transceptor nRF24L01+
 RF24 radio(CE_PIN, CSN_PIN);
+
+// Pantalla OLED (opcional): si no está conectada, el transmisor
+// sigue funcionando y solo se pierde la información visual.
+Pantalla pantalla;
+Panel panel(pantalla);
 
 // Joysticks: VRX, VRY y botón (SW). El botón usa pull-up
 // interno (ezButton lo configura en el constructor).
@@ -101,6 +108,9 @@ static int mapJoystickValues(int val, int lower, int middle, int upper, bool rev
 
 // Datos a transmitir (estructura definida en ProtocoloRF.h)
 DatosRF datos;
+
+// Contador de paquetes enviados con éxito (se muestra en el panel)
+uint16_t paquetesEnviados = 0;
 
 void printData(const DatosRF &d, const LecturasEjes &raw) {
   Serial.print(F("yaw="));
@@ -164,6 +174,12 @@ void setup() {
   // Valores neutros iniciales de todos los canales
   inicializarDatosRF(datos);
 
+  // Pantalla OLED (opcional): si no responde, se sigue transmitiendo
+  // igual (solo se pierde la información visual).
+  if (pantalla.iniciar()) {
+    panel.iniciar();
+  }
+
   Serial.println(F("Iniciando..."));
 }
 
@@ -216,9 +232,16 @@ void loop() {
   if (report) {
     Serial.print(F("se transmite "));  // payload entregado
     printData(datos, crudos);
+    paquetesEnviados++;
   } else {
     Serial.println(F("Transmission failed or timed out"));  // no entregado
   }
+
+  // Panel OLED: muestra los canales enviados, las lecturas crudas
+  // y el estado del envío. Solo refresca las páginas que cambian,
+  // así que no frena el ritmo de transmisión.
+  panel.actualizar(datos, crudos.yaw, crudos.throttle, crudos.roll, crudos.pitch,
+                   report, paquetesEnviados);
 
   // ~50 Hz: un paquete cada 20 ms
   delay(20);

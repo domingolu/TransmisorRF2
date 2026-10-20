@@ -65,6 +65,11 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 - D0/D1 (UART) funcionaron en la prueba real del TX; si hay fallas de serie, mover pines.
 
 ## Próximos pasos
-- Medir el rango real de cada eje (el monitor imprime el crudo) y cargar los valores en CalibracionEje; verificar que cada stick mueva el eje correcto (e invertir los que haga falta).
+- Medir el rango real de cada eje (el monitor imprime el crudo y ahora
+  también el panel OLED) y cargar los valores en `CalibracionEje`; verificar
+  que cada stick mueva el eje correcto (e invertir los que haga falta).
 - Probar los potenciómetros P1/P2 (ch9/ch10) en hardware.
-- Feature de calibración con OLED + pulsadores (y flags `reverse` configurables).
+- Feature de calibración con los pulsadores D5-D8 y el panel OLED (y flags
+  `reverse` configurables): el panel ya muestra los crudos.
+- Verificar en el simulador de Wokwi que el OLED acepta PAGEADDR; si no,
+  `PANTALLA_REFRESCO_PAGINAS 0` en `lib/Pantalla/Pantalla.h`.

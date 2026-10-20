@@ -49,6 +49,9 @@ TransmisorRF2/
 - **Protocolo RF** (`docs/protocolo-nrf24l01.md`): pipe, data rate, payload y mapa de canales.
 - **Cableado** (`docs/hardware/wiring.md`): nRF24L01+ y componentes de cada placa.
 - **Specs por dispositivo**: `transmitter/README.md` y `receiver/README.md`.
+- **Panel OLED del TX** (`transmitter/README.md`): la pantalla SSD1306
+  muestra los canales enviados, las lecturas crudas y el estado del envío.
+  Es opcional: el transmisor funciona igual sin ella.
 - **Simulación en Wokwi** (`transmitter/README.md`): entorno `[env:wokwi]`
   para probar el transmisor en el simulador de Wokwi (el enlace RF no se
   simula: Wokwi no tiene parte para el nRF24L01+).
